@@ -24,15 +24,43 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   var userInput = '';
-  var answer = '';
-  final List<String> button = ['A/C','+/-','%','DEL','7','8','9','/','4','5','6','*','1','2','3', '-','0','.','=','+',];
+  var answer = '0';
+  validate_del() {
+    if (userInput.length > 1) {
+      return userInput.substring(0, userInput.length - 1);
+    } else {
+      return '';
+    }
+  }
+
+  final List<String> button = [
+    'A/C',
+    '+/-',
+    '%',
+    'DEL',
+    '7',
+    '8',
+    '9',
+    '/',
+    '4',
+    '5',
+    '6',
+    '*',
+    '1',
+    '2',
+    '3',
+    '-',
+    '0',
+    '.',
+    '=',
+    '+',
+  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: new AppBar(
         title: new Text("Calculator"),
       ),
-      backgroundColor: Colors.white60,
       body: Column(
         children: <Widget>[
           Expanded(
@@ -41,25 +69,27 @@ class _HomePageState extends State<HomePage> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
                   Container(
-                    padding: EdgeInsets.all(20),
+                    padding: EdgeInsets.all(10),
                     alignment: Alignment.centerRight,
                     child: Text(
                       userInput,
                       style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.white30,
+                        fontSize: 20,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
                   Container(
-                    padding: EdgeInsets.all(15),
+                    padding: EdgeInsets.all(10),
                     alignment: Alignment.centerRight,
                     child: Text(
                       answer,
                       style: TextStyle(
-                          fontSize: 30,
-                          color: Colors.white30,
-                          fontWeight: FontWeight.bold),
+                        fontSize: 25,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   )
                 ],
@@ -67,11 +97,16 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           Expanded(
-            flex: 3,
+            flex: 4,
             child: Container(
               child: GridView.builder(
+                  physics: BouncingScrollPhysics(),
+                  clipBehavior: Clip.hardEdge,
+                  itemCount: button.length,
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 4),
+                      crossAxisCount: 4,
+                      mainAxisSpacing: 2.0,
+                      crossAxisSpacing: 3.0),
                   itemBuilder: (BuildContext context, int index) {
                     if (index == 0) {
                       return MyButton(
@@ -82,7 +117,7 @@ class _HomePageState extends State<HomePage> {
                           });
                         },
                         buttonText: button[index],
-                        color: Colors.blue[50],
+                        color: Color.fromARGB(26, 0, 140, 255),
                         textColor: Colors.black,
                       );
                     } else if (index == 1) {
@@ -102,6 +137,17 @@ class _HomePageState extends State<HomePage> {
                         color: Colors.blue[50],
                         textColor: Colors.black,
                       );
+                    } else if (index == 3) {
+                      return MyButton(
+                        buttonText: button[index],
+                        buttontapped: () {
+                          setState(() {
+                            userInput = validate_del();
+                          });
+                        },
+                        textColor: Colors.black,
+                        color: Colors.blue[50],
+                      );
                     } else if (index == 18) {
                       return MyButton(
                         buttonText: button[index],
@@ -111,22 +157,26 @@ class _HomePageState extends State<HomePage> {
                           });
                         },
                         color: Colors.orange[700],
-                        textColor: Colors.white30,
+                        textColor: Colors.black,
                       );
                     } else {
                       return MyButton(
                         buttonText: button[index],
                         buttontapped: () {
                           setState(() {
-                            userInput += button[index];
+                            isOperator(button[index])
+                                ? userInput += button[index]
+                                : validateuserinput()
+                                    ? userInput = button[index]
+                                    : userInput += button[index];
                           });
                         },
                         color: isOperator(button[index])
-                            ? Colors.blueAccent
-                            : Colors.white,
+                            ? Color(0x21008CFF)
+                            : Color.fromARGB(255, 164, 164, 164),
                         textColor: isOperator(button[index])
-                            ? Colors.white
-                            : Colors.black,
+                            ? Colors.black
+                            : Colors.white,
                       );
                     }
                   }),
@@ -135,6 +185,13 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
     );
+  }
+
+  validateuserinput() {
+    if (userInput == '') {
+      return true;
+    }
+    return false;
   }
 
   bool isOperator(String x) {
